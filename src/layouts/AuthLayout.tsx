@@ -1,20 +1,19 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom'
 
-import RegisterPage from '../pages/auth/RegisterPage';
-import LoginPage from '../pages/auth/LoginPage';
+import RegisterPage from '../pages/auth/RegisterPage'
+import LoginPage from '../pages/auth/LoginPage'
 
 export function AuthLayout() {
-
-    return (
-        <div className="container">
-            <div className="row">
-                <div className="col-sm-8 offset-sm-2 mt-5">
-                    <Routes>
-                        <Route path="public/login" element={<LoginPage />} />
-                        <Route path="public/register" element={<RegisterPage />} />
-                    </Routes>
-                </div>
-            </div>
+  return (
+    <div className="container">
+      <div className="row">
+        <div className="col-sm-8 offset-sm-2 mt-5">
+          <Routes>
+            <Route path="public/login" element={<LoginPage />} />
+            <Route path="public/register" element={<RegisterPage />} />
+          </Routes>
         </div>
-    );
+      </div>
+    </div>
+  )
 }

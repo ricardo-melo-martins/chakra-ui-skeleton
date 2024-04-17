@@ -1,9 +1,23 @@
-import { Input, Button, FormControl, FormLabel, Box, Flex, Stack, InputGroup, InputRightElement, useDisclosure, useToast } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
-import HttpClient from '../../config/api/httpClient';
-import { history } from '../../boot/history';
-import { useContext, useState } from 'react';
-import { AuthContext } from '../../config/context/AuthContext';
+import {
+  Input,
+  Button,
+  FormControl,
+  FormLabel,
+  Box,
+  Flex,
+  Stack,
+  InputGroup,
+  InputRightElement,
+  useDisclosure,
+  useToast,
+  useMediaQuery
+} from '@chakra-ui/react'
+import { useForm } from 'react-hook-form'
+import HttpClient from '../../config/api/httpClient'
+import { history } from '../../boot/history'
+import { useContext, useState } from 'react'
+import { AuthContext } from '../../config/context/AuthContext'
+import Props from '../../common/types/Props'
 
 type LoginType = {
   email: string
@@ -11,104 +25,125 @@ type LoginType = {
 }
 
 const LoginItem: LoginType = {
-    email: 'email@tests.com',
-    password: 'YourP@ssw0rd!'
+  email: 'email@tests.com',
+  password: 'YourP@ssw0rd!'
 }
 
-type Props = {}
-
 const LoginPage = (props: Props) => {
+  const [isFitScreen] = useMediaQuery('(max-width: 600px')
 
-     const {authenticated, setAuthenticated} = useContext(AuthContext)
+  const { authenticated, setAuthenticated } = useContext(AuthContext)
 
-    const { register, formState: { errors, isSubmitting }, handleSubmit } = useForm<LoginType>()
+  const {
+    register,
+    formState: { errors, isSubmitting },
+    handleSubmit
+  } = useForm<LoginType>()
 
-    const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onToggle } = useDisclosure()
 
-    const toast = useToast();
+  const toast = useToast()
 
-    const onLogin = async (data: LoginType) => {
+  const onLogin = async (data: LoginType) => {
+    try {
+      const response = await HttpClient.post('/auth/login', data)
 
-        try{
-            const response = await HttpClient.post('/auth/login', data);
+      sessionStorage.setItem(
+        'user',
+        JSON.stringify(response.data.data.attributes.user)
+      )
+      sessionStorage.setItem('token', response.data.data.attributes.token)
 
-            sessionStorage.setItem('user', JSON.stringify(response.data.data.attributes.user)); 
-            sessionStorage.setItem('token', response.data.data.attributes.token);
-            
-            setAuthenticated(true)
+      setAuthenticated(true)
 
-            history.navigate('/admin/tarefas');    
+      history.navigate('/admin/tarefas')
+    } catch (error) {
+      toast({
+        title: 'Erro de autenticação.',
+        description: 'Não foi possível validar seus dados.',
+        status: 'error',
+        duration: 9000,
+        isClosable: true
+      })
+    }
+  }
 
-        } catch (error) {
+  return (
+    <Flex
+      height="100vh"
+      p={12}
+      width={isFitScreen ? '60%' : '100%'}
+      direction="column"
+      justifyContent={isFitScreen ? 'center' : 'space-between'}
+      alignItems="center"
+      textAlign="center"
+    >
+      <Box w="600px">
+        <form onSubmit={handleSubmit(onLogin)}>
+          <Stack spacing={4}>
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
+              <Input
+                type="email"
+                placeholder="Digite seu email"
+                defaultValue={LoginItem.email}
+                {...register('email', {
+                  required: true,
+                  pattern: /^\S+@\S+$/i
+                })}
+              />
+              {errors.email && (
+                <span style={{ color: 'red' }}>Email inválido</span>
+              )}
+            </FormControl>
 
-            toast({
-                title: 'Erro de autenticação.',
-                description: "Não foi possível validar seus dados.",
-                status: 'error',
-                duration: 9000,
-                isClosable: true,
-            });
-        }
-        
-    };
+            <FormControl id="senha" isRequired mt={4}>
+              <FormLabel htmlFor="password">Senha</FormLabel>
+              <InputGroup size="md">
+                <Input
+                  id="password"
+                  type={isOpen ? 'text' : 'password'}
+                  placeholder="Digite sua senha"
+                  defaultValue={LoginItem.password}
+                  {...register('password', {
+                    required: true,
+                    minLength: 6
+                  })}
+                />
+                <InputRightElement width="4.5rem">
+                  <Button h="1.75rem" size="sm" onClick={onToggle}>
+                    {isOpen ? 'Esconder' : 'Mostrar'}
+                  </Button>
+                </InputRightElement>
+              </InputGroup>
+              {errors.password && (
+                <span style={{ color: 'red' }}>
+                  Senha deve ter pelo menos 6 caracteres
+                </span>
+              )}
+            </FormControl>
 
-    return (
-        <Flex
-            align="center"
-            justify="center"
-            minHeight="100vh"
-        >
-            <Box w="300px">
+            <Button
+              type="submit"
+              colorScheme="pink"
+              mt={4}
+              width="100%"
+              isLoading={isSubmitting}
+            >
+              Entrar
+            </Button>
 
-                <form onSubmit={handleSubmit(onLogin)}>
-                
-                <Stack spacing={4}>
-
-                    <FormControl isRequired>
-                        <FormLabel>Email</FormLabel>
-                        <Input
-                            type="email"
-                            placeholder="Digite seu email"
-                            defaultValue={LoginItem.email}
-                            {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-                        />
-                        {errors.email && <span style={{ color: 'red' }}>Email inválido</span>}
-                    </FormControl>
-
-                    <FormControl id="senha" isRequired mt={4}>
-                        <FormLabel htmlFor='password'>Senha</FormLabel>
-                        <InputGroup size='md'>
-                        <Input
-                            id='password'
-                            type={isOpen ? 'text' : 'password'}
-                            placeholder='Digite sua senha'
-                            defaultValue={LoginItem.password}
-                            {...register("password", { required: true, minLength: 6 })}
-                        />
-                        <InputRightElement width='4.5rem'>
-                            <Button h='1.75rem' size='sm' onClick={onToggle}>
-                            {isOpen ? 'Esconder' : 'Mostrar'}
-                            </Button>
-                        </InputRightElement>
-                        </InputGroup>
-                        {errors.password && <span style={{ color: 'red' }}>Senha deve ter pelo menos 6 caracteres</span>}
-                    </FormControl>
-
-                    <Button type='submit' colorScheme="blue" mt={4} width="100%" isLoading={isSubmitting}>
-                        Entrar
-                    </Button>
-
-                    {/* TODO: colocar aqui erros retornados da api
+            {/* TODO: colocar aqui erros retornados da api
                         {error && (
                         <FormHelperText color="red.500" mt={2}>
                             {error}
                         </FormHelperText>
                     )} */}
-                </Stack>
-            </form>
-            </Box>
-        </Flex>
-    );
+          </Stack>
+        </form>
+      </Box>
+    </Flex>
+  )
 }
 
-export default LoginPage;
+export default LoginPage

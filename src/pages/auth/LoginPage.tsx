@@ -1,7 +1,7 @@
 /* TODO: 
 - onLogin message api error
 */
-import { Input, Button, FormControl, FormLabel, Box, Flex, Stack } from '@chakra-ui/react';
+import { Input, Button, FormControl, FormLabel, Box, Flex, Stack, InputGroup, InputRightElement, useDisclosure } from '@chakra-ui/react';
 import { redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import HttpClient from '../../config/api/httpClient';
@@ -14,6 +14,8 @@ type LoginFormData = {
 function LoginPage() {
 
     const { register, formState: { errors, isSubmitting }, handleSubmit } = useForm<LoginFormData>()
+
+    const { isOpen, onToggle } = useDisclosure();
 
     const onLogin = async (data: LoginFormData) => {
         try{
@@ -40,7 +42,7 @@ function LoginPage() {
                 
                 <Stack spacing={4}>
 
-                    <FormControl>
+                    <FormControl isRequired>
                         <FormLabel>Email</FormLabel>
                         <Input
                             type="email"
@@ -50,13 +52,21 @@ function LoginPage() {
                         {errors.email && <span style={{ color: 'red' }}>Email inválido</span>}
                     </FormControl>
 
-                    <FormControl mt={4}>
-                        <FormLabel>Senha</FormLabel>
+                    <FormControl id="senha" isRequired mt={4}>
+                        <FormLabel htmlFor='password'>Senha</FormLabel>
+                        <InputGroup size='md'>
                         <Input
-                            type="password"
-                            placeholder="Digite sua senha"
+                            id='password'
+                            type={isOpen ? 'text' : 'password'}
+                            placeholder='Digite sua senha'
                             {...register("senha", { required: true, minLength: 6 })}
                         />
+                        <InputRightElement width='4.5rem'>
+                            <Button h='1.75rem' size='sm' onClick={onToggle}>
+                            {isOpen ? 'Esconder' : 'Mostrar'}
+                            </Button>
+                        </InputRightElement>
+                        </InputGroup>
                         {errors.senha && <span style={{ color: 'red' }}>Senha deve ter pelo menos 6 caracteres</span>}
                     </FormControl>
 

@@ -1,20 +1,13 @@
 /* TODO: 
-- interceptor axios
 - deleteTask modal confirmação
 - deleteTask message apagado
 - deleteTask message api error
 - list finished status
 */
-import {
-  VStack,
-  HStack,
-  Text,
-  IconButton
-} from '@chakra-ui/react';
-
+import { useState, useEffect } from 'react';
+import HttpClient from '../../config/api/httpClient';
+import { VStack, HStack, Text, IconButton } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
 
 type TaskItem = {
     id: number
@@ -24,17 +17,13 @@ type TaskItem = {
     finished_at: string
 }
 
-const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwMDAvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE3MTMzMjgxMzIsImV4cCI6MTcxMzMzMTczMiwibmJmIjoxNzEzMzI4MTMyLCJqdGkiOiJzNWtiZDgzVXNoYnFwdVpsIiwic3ViIjoiNCIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.biLRSvWJVxfhfRldezPCUlo3NziLu9OJwT6VlBRNXmg';
-axios.defaults.baseURL = 'http://localhost:8000/api'
-axios.defaults.headers.common = {'Authorization': `bearer ${token}`}
-
 function TaskListPage() {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get('/tasks');
+        const response = await HttpClient.get('/tasks');
         setTasks(response.data);
       } catch (error) {
         console.error('fetchTask : error :', error);
@@ -46,7 +35,7 @@ function TaskListPage() {
 
   const deleteTask = async (taskId: number) => {
     try {
-      await axios.delete(`/tasks/${taskId}`);
+      await HttpClient.delete(`/tasks/${taskId}`);
       setTasks(tasks.filter((task: TaskItem) => task.id !== taskId));
     } catch (error) {
       console.error('deleteTask : error:', error);

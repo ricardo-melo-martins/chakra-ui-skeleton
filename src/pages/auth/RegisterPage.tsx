@@ -1,23 +1,39 @@
+/* TODO: 
+- remap data ajustar dados em DTO que são enviados pra /register
+- onRegister message criado
+- onRegister message api error
+*/
 import { Box, Button, Flex, FormControl, FormLabel, Input, Stack } from '@chakra-ui/react';
-import axios from 'axios';
+import { redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import HttpClient from '../../config/api/httpClient';
 
-type FormData = {
+type RegisterFormData = {
   nome: string
   email: string
   senha: string
   senhaConfirma: string
 }
 
+type RegisterApiData = {
+  username: string
+  first_name: string
+  last_name: string
+  email: string
+  password: string
+  password_confirmation: string
+}
+
 function RegisterPage() {
 
-    const { register, formState: { errors, isSubmitting }, handleSubmit } = useForm<FormData>()
+    const { register, formState: { errors, isSubmitting }, handleSubmit } = useForm<RegisterFormData>()
 
-    const onRegister = async (data: FormData) => {
+    const onRegister = async (data: RegisterFormData) => {
         try{
-            // TODO: colocar interceptor para rastrear url e bearer token
-            const response = await axios.post('http://localhost:8000/api/auth/register', data);
+            const response = await HttpClient.post('/auth/register', data);
             console.log('RegisterPage: response:', response.data);
+
+            return redirect("/login");
         } catch (error) {
             console.error('RegisterPage: Error:', error);
         }

@@ -1,7 +1,7 @@
 
 import { Box, Code, Container, Grid, Heading, Icon, Link, Text, VStack } from "@chakra-ui/react";
 import { Logo } from "../../Logo";
-import { FaCog } from 'react-icons/fa'; // Importe os ícones desejados
+import { FaCog } from 'react-icons/fa';
 
 function AboutPage() {
     return (
@@ -16,6 +16,7 @@ function AboutPage() {
                 <Text>
                     Esta é um esqueleto de aplicação usando Chakra UI.
                 </Text>
+                
                 <Heading>Características</Heading>
                 <Text>
                     - <Code fontSize="xl">Typescript</Code>

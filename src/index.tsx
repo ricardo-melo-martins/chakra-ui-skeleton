@@ -8,6 +8,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom"
 import LoginPage from "./pages/auth/LoginPage"
 import AboutPage from "./pages/about/AboutPage"
 import RegisterPage from "./pages/auth/RegisterPage"
+import TaskListPage from "./pages/tasks/TaskListPage"
 
 
 const container = document.getElementById("root")
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "/sobre",
     element: <AboutPage />,
+  },
+  {
+    path: "/tarefas",
+    element: <TaskListPage />,
   },
 ]);
 

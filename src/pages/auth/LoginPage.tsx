@@ -1,6 +1,10 @@
+/* TODO: 
+- onLogin message api error
+*/
 import { Input, Button, FormControl, FormLabel, Box, Flex, Stack } from '@chakra-ui/react';
+import { redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import HttpClient from '../../config/api/httpClient';
 
 type LoginFormData = {
   email: string
@@ -13,11 +17,12 @@ function LoginPage() {
 
     const onLogin = async (data: LoginFormData) => {
         try{
-            // TODO: colocar interceptor para rastrear url e bearer token
-            const response = await axios.post('http://localhost:8000/api/auth/login', data);
-            console.log('RegisterPage: response:', response.data);
+            const response = await HttpClient.post('/auth/login', data);
+            console.log('LoginPage: response:', response.data);
+
+            return redirect("/");
         } catch (error) {
-            console.error('RegisterPage: Error:', error);
+            console.error('LoginPage: Error:', error);
         }
 
     };

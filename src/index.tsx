@@ -7,6 +7,7 @@ import * as serviceWorker from "./serviceWorker"
 import { RouterProvider, createBrowserRouter } from "react-router-dom"
 import LoginPage from "./pages/auth/LoginPage"
 import AboutPage from "./pages/about/AboutPage"
+import RegisterPage from "./pages/auth/RegisterPage"
 
 
 const container = document.getElementById("root")
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <LoginPage />,
+  },
+  {
+    path: "/registro",
+    element: <RegisterPage />,
   },
   {
     path: "/sobre",

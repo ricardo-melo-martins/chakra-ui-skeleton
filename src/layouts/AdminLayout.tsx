@@ -1,17 +1,16 @@
 import { Routes, Route } from 'react-router-dom';
 
-import RegisterPage from '../pages/auth/RegisterPage';
-import LoginPage from '../pages/auth/LoginPage';
+import TaskListPage from '../pages/tasks/TaskListPage';
 
-export function AuthLayout() {
+export function AdminLayout() {
 
     return (
         <div className="container">
             <div className="row">
                 <div className="col-sm-8 offset-sm-2 mt-5">
                     <Routes>
-                        <Route path="public/login" element={<LoginPage />} />
-                        <Route path="public/register" element={<RegisterPage />} />
+                        <Route path="admin/tarefas" element={<TaskListPage />} />
+                        {/* <Route path="admin/logout" element={<LogoutPage />} /> */}
                     </Routes>
                 </div>
             </div>

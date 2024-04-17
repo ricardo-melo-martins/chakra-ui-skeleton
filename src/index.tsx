@@ -1,58 +1,23 @@
-import { ChakraProvider, ColorModeScript, extendTheme } from "@chakra-ui/react"
+import { ChakraProvider, ColorModeScript } from "@chakra-ui/react"
 import * as React from "react"
 import * as ReactDOM from "react-dom/client"
-import { App } from "./App"
+import App from "./App"
 // import reportWebVitals from "./reportWebVitals"
 import * as serviceWorker from "./serviceWorker"
-import { RouterProvider, createBrowserRouter } from "react-router-dom"
-import LoginPage from "./pages/auth/LoginPage"
-import AboutPage from "./pages/about/AboutPage"
-import RegisterPage from "./pages/auth/RegisterPage"
-import TaskListPage from "./pages/tasks/TaskListPage"
-
+import { BrowserRouter } from "react-router-dom"
+import Theme from "./layouts/apperance/Theme"
 
 const container = document.getElementById("root")
 if (!container) throw new Error('Failed to find the root element');
 const root = ReactDOM.createRoot(container)
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <LoginPage />,
-  },
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/registro",
-    element: <RegisterPage />,
-  },
-  {
-    path: "/sobre",
-    element: <AboutPage />,
-  },
-  {
-    path: "/tarefas",
-    element: <TaskListPage />,
-  },
-]);
-
-const theme = extendTheme({
-  config: {
-    initialColorMode: "system",
-    useSystemColorMode: false,
-  },
-});
-
 root.render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
-      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-      {/* <BrowserRouter>
+    <ChakraProvider theme={Theme}>
+      <ColorModeScript initialColorMode={Theme.config.initialColorMode} />
+      <BrowserRouter>
         <App />
-      </BrowserRouter> */}
-      <RouterProvider router={router} />
+      </BrowserRouter>
     </ChakraProvider>
   </React.StrictMode>,
 );

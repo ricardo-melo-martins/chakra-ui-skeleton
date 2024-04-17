@@ -1,14 +1,24 @@
-/* TODO: 
-- onLogin message api error
-*/
-import { Input, Button, FormControl, FormLabel, Box, Flex, Stack, InputGroup, InputRightElement, useDisclosure } from '@chakra-ui/react';
-import { redirect } from 'react-router-dom';
+import { Input, Button, FormControl, FormLabel, Box, Flex, Stack, InputGroup, InputRightElement, useDisclosure, useToast } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import HttpClient from '../../config/api/httpClient';
+import { history } from '../../boot/history';
 
 type LoginFormData = {
   email: string
   senha: string
+}
+
+type LoginApiData = {
+  email: string
+  password: string
+}
+
+function exchangeData(formData: LoginFormData): LoginApiData {
+  const loginApiData: LoginApiData = {
+    email: formData.email,
+    password: formData.senha
+  };
+  return loginApiData;
 }
 
 function LoginPage() {
@@ -17,16 +27,33 @@ function LoginPage() {
 
     const { isOpen, onToggle } = useDisclosure();
 
+    const toast = useToast();
+
     const onLogin = async (data: LoginFormData) => {
+
+        const dataApi = exchangeData(data)
+
         try{
-            const response = await HttpClient.post('/auth/login', data);
-            console.log('LoginPage: response:', response.data);
+            const response = await HttpClient.post('/auth/login', dataApi);
 
-            return redirect("/");
+            sessionStorage.setItem('user', JSON.stringify(response.data.data.attributes.user)); 
+            sessionStorage.setItem('token', response.data.data.attributes.token);
+            
+            history.navigate('/admin/tarefas');    
+            
         } catch (error) {
-            console.error('LoginPage: Error:', error);
-        }
+            sessionStorage.setItem('token', '');
 
+            toast({
+                title: 'Erro de autenticação.',
+                description: "Não foi possível validar seus dados.",
+                status: 'error',
+                duration: 9000,
+                isClosable: true,
+            });
+        }
+        
+        
     };
 
     return (

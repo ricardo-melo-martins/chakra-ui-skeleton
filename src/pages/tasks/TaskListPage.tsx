@@ -1,9 +1,3 @@
-/* TODO: 
-- deleteTask modal confirmação
-- deleteTask message apagado
-- deleteTask message api error
-- list finished status
-*/
 import { useState, useEffect } from 'react';
 import HttpClient from '../../config/api/httpClient';
 import { VStack, HStack, Text, IconButton } from '@chakra-ui/react';
@@ -57,15 +51,6 @@ function TaskListPage() {
               </HStack>
           ))}
       </VStack>
-      {/* <Box>
-              {tasks.map((task: TaskItem) => (
-                  <Box key={task.id}>
-                      <div>Nome: {task.name}</div>
-                      <div>Descrição: {task.description}</div>
-                      <div>Status: {task.finished_at}</div>
-                  </Box>
-              ))}
-          </Box> */}
        </>
   );
 }

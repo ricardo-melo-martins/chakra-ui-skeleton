@@ -1,8 +1,3 @@
-/* TODO: 
-- remap data ajustar dados em DTO que são enviados pra /register
-- onRegister message api error
-- delay para redirecionar para login
-*/
 import { Box, Button, Flex, FormControl, FormLabel, Input, InputGroup, InputRightElement, Stack, useDisclosure, useToast } from '@chakra-ui/react';
 import { redirect } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -49,6 +44,13 @@ function RegisterPage() {
 
         } catch (error) {
             console.error('RegisterPage: Error:', error);
+            toast({
+                title: 'Erro no cadastro.',
+                description: "Não foi possível enviar seus dados.",
+                status: 'error',
+                duration: 9000,
+                isClosable: true,
+            });
         }
     };
 

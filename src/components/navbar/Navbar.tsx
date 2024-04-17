@@ -8,9 +8,29 @@ import {
     useColorModeValue,
 } from "@chakra-ui/react";
 import { ColorModeSwitcher } from "../ColorModeSwitcher";
+import { AuthContext } from "../../config/context/AuthContext";
+import { useContext } from "react";
+import HttpClient from "../../config/api/httpClient";
+import { history } from "../../boot/history";
 
+type Props = {}
 
-function Navbar() {
+const Navbar = (props: Props) => {
+
+    const { authenticated, setAuthenticated } = useContext(AuthContext)
+
+    const handleLogout = async () => {
+        
+        const response = await HttpClient.post('/auth/logout', {});
+        
+        sessionStorage.removeItem('user'); 
+        sessionStorage.removeItem('token'); 
+        
+        setAuthenticated(false)
+
+        history.navigate('/public/login');    
+    };
+    
     const bg = useColorModeValue("gray.50", "gray.900");
     return (
         <chakra.header bg={bg} w="100%">
@@ -23,13 +43,16 @@ function Navbar() {
                                 <VisuallyHidden>Logo</VisuallyHidden>
                             </HStack>
                         </Link>
+                       
+                        <Link hidden={Boolean(authenticated)} as={RouterLink} to="/">Início</Link>
+                        <Link hidden={Boolean(authenticated)} as={RouterLink} to="public/registro">Registro</Link>
+                        <Link hidden={Boolean(authenticated)} as={RouterLink} to="public/sobre">Sobre</Link>
 
-                        <Link as={RouterLink} to="/">Início</Link>
-                        <Link as={RouterLink} to="admin/tarefas">Tarefas</Link>
-                        <Link as={RouterLink} to="public/sobre">Sobre</Link>
+                        <Link hidden={Boolean(!authenticated)} as={RouterLink} to="admin/tarefas">Tarefas</Link>
+                        
                     </HStack>
                     <ColorModeSwitcher justifySelf="flex-end" />
-                    <Link justifySelf="flex-end" as={RouterLink} to="admin/logout">Sair</Link>
+                    <Link hidden={Boolean(!authenticated)} justifySelf="flex-end" as={RouterLink} onClick={() => handleLogout()} to="admin/logout">Sair</Link>
                 </HStack>
             </Container>
         </chakra.header>

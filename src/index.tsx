@@ -6,6 +6,7 @@ import App from "./App"
 import * as serviceWorker from "./serviceWorker"
 import { BrowserRouter } from "react-router-dom"
 import Theme from "./layouts/apperance/Theme"
+import { AuthProvider } from "./config/context/AuthContext"
 
 const container = document.getElementById("root")
 if (!container) throw new Error('Failed to find the root element');
@@ -16,7 +17,9 @@ root.render(
     <ChakraProvider theme={Theme}>
       <ColorModeScript initialColorMode={Theme.config.initialColorMode} />
       <BrowserRouter>
-        <App />
+        <AuthProvider>
+            <App />
+        </AuthProvider>
       </BrowserRouter>
     </ChakraProvider>
   </React.StrictMode>,

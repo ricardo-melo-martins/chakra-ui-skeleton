@@ -1,5 +1,5 @@
 
-import { lazy } from "react";
+import { lazy, useContext } from "react";
 import { Route, Routes } from "react-router-dom"
 import AboutPage from "../pages/about/AboutPage"
 import RegisterPage from "../pages/auth/RegisterPage"
@@ -9,6 +9,9 @@ import LoginPage from "../pages/auth/LoginPage"
 import { AuthLayout } from "../layouts/AuthLayout";
 import { AdminLayout } from "../layouts/AdminLayout";
 import PrivateRoute from "../components/route/PrivateRoute";
+import { AuthContext } from "../config/context/AuthContext";
+
+type Props = {}
 
 const NotFoundPage = lazy(() => import("../pages/errors/NotFoundPage"));
 
@@ -51,8 +54,10 @@ const privateRoutes = [
   },
 ]
 
+const RouterFabric = (props: Props) => {
 
-function RouterFabric() {
+  const { authenticated } = useContext(AuthContext)
+  
   return (
     <Routes>
 
@@ -67,7 +72,7 @@ function RouterFabric() {
         </Route>
 
         <Route path="/" element={<LoginPage />} />
-        
+
         {routes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />
         ))}

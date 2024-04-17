@@ -1,12 +1,12 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { history } from '../../boot/history';
+import { AuthContext } from '../../config/context/AuthContext';
+import { useContext } from 'react';
 
-function PrivateRoute() {
-    const auth = String(sessionStorage.getItem('token'));
+const PrivateRoute = () => {
+    
+    const { authenticated } = useContext(AuthContext)
 
-    if (!auth) {
-        return <Navigate to="/login" state={{ from: history.location }} />
-    }
+    if(!authenticated) return <Navigate to='/public/login' replace />
 
     return <Outlet />;
 }

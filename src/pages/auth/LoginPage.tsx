@@ -2,47 +2,44 @@ import { Input, Button, FormControl, FormLabel, Box, Flex, Stack, InputGroup, In
 import { useForm } from 'react-hook-form';
 import HttpClient from '../../config/api/httpClient';
 import { history } from '../../boot/history';
+import { useContext, useState } from 'react';
+import { AuthContext } from '../../config/context/AuthContext';
 
-type LoginFormData = {
-  email: string
-  senha: string
-}
-
-type LoginApiData = {
+type LoginType = {
   email: string
   password: string
 }
 
-function exchangeData(formData: LoginFormData): LoginApiData {
-  const loginApiData: LoginApiData = {
-    email: formData.email,
-    password: formData.senha
-  };
-  return loginApiData;
+const LoginItem: LoginType = {
+    email: 'email@tests.com',
+    password: 'YourP@ssw0rd!'
 }
 
-function LoginPage() {
+type Props = {}
 
-    const { register, formState: { errors, isSubmitting }, handleSubmit } = useForm<LoginFormData>()
+const LoginPage = (props: Props) => {
+
+     const {authenticated, setAuthenticated} = useContext(AuthContext)
+
+    const { register, formState: { errors, isSubmitting }, handleSubmit } = useForm<LoginType>()
 
     const { isOpen, onToggle } = useDisclosure();
 
     const toast = useToast();
 
-    const onLogin = async (data: LoginFormData) => {
-
-        const dataApi = exchangeData(data)
+    const onLogin = async (data: LoginType) => {
 
         try{
-            const response = await HttpClient.post('/auth/login', dataApi);
+            const response = await HttpClient.post('/auth/login', data);
 
             sessionStorage.setItem('user', JSON.stringify(response.data.data.attributes.user)); 
             sessionStorage.setItem('token', response.data.data.attributes.token);
             
+            setAuthenticated(true)
+
             history.navigate('/admin/tarefas');    
-            
+
         } catch (error) {
-            sessionStorage.setItem('token', '');
 
             toast({
                 title: 'Erro de autenticação.',
@@ -53,7 +50,6 @@ function LoginPage() {
             });
         }
         
-        
     };
 
     return (
@@ -62,7 +58,6 @@ function LoginPage() {
             justify="center"
             minHeight="100vh"
         >
-
             <Box w="300px">
 
                 <form onSubmit={handleSubmit(onLogin)}>
@@ -74,6 +69,7 @@ function LoginPage() {
                         <Input
                             type="email"
                             placeholder="Digite seu email"
+                            defaultValue={LoginItem.email}
                             {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
                         />
                         {errors.email && <span style={{ color: 'red' }}>Email inválido</span>}
@@ -86,7 +82,8 @@ function LoginPage() {
                             id='password'
                             type={isOpen ? 'text' : 'password'}
                             placeholder='Digite sua senha'
-                            {...register("senha", { required: true, minLength: 6 })}
+                            defaultValue={LoginItem.password}
+                            {...register("password", { required: true, minLength: 6 })}
                         />
                         <InputRightElement width='4.5rem'>
                             <Button h='1.75rem' size='sm' onClick={onToggle}>
@@ -94,7 +91,7 @@ function LoginPage() {
                             </Button>
                         </InputRightElement>
                         </InputGroup>
-                        {errors.senha && <span style={{ color: 'red' }}>Senha deve ter pelo menos 6 caracteres</span>}
+                        {errors.password && <span style={{ color: 'red' }}>Senha deve ter pelo menos 6 caracteres</span>}
                     </FormControl>
 
                     <Button type='submit' colorScheme="blue" mt={4} width="100%" isLoading={isSubmitting}>

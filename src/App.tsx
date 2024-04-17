@@ -11,13 +11,12 @@ export default function App(){
     history.location = useLocation();
 
 return (
-    <>
         <Suspense fallback={<Fallback />}>
-
-            <Navbar />
-            <RouterFabric />    
         
+            <Navbar />
+
+            <RouterFabric />    
+
         </Suspense>
-    </>
     )
 }

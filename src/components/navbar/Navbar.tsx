@@ -27,6 +27,7 @@ const Navbar = (props: Props) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response = await HttpClient.post('/auth/logout', {})
 
+    // TODO: centralizar ações de autenticação
     sessionStorage.removeItem('user')
     sessionStorage.removeItem('token')
 
@@ -36,6 +37,10 @@ const Navbar = (props: Props) => {
   }
 
   const bg = useColorModeValue('gray.50', 'gray.900')
+
+  // TODO: centralizar ações de autenticação
+  const user: any = sessionStorage.getItem('user')
+  const username: any = user ? JSON.parse(user).first_name : null
 
   return (
     <chakra.header bg={bg} w="100%">
@@ -86,10 +91,11 @@ const Navbar = (props: Props) => {
               borderRadius="md"
               borderWidth="1px"
               _hover={{ bg: 'gray.400' }}
-              _expanded={{ bg: 'blue.400' }}
+              _expanded={{ bg: 'pink.400' }}
               _focus={{ boxShadow: 'outline' }}
             >
-              {'nome do usuario'} <ChevronDownIcon />
+              {`${String(username)}`}
+              <ChevronDownIcon />
             </MenuButton>
             <MenuList>
               <MenuItem onClick={() => handleLogout()}>Sair</MenuItem>

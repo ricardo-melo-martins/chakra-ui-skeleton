@@ -26,7 +26,8 @@ import {
   Icon,
   Flex,
   Spacer,
-  ButtonGroup
+  ButtonGroup,
+  useToast
 } from '@chakra-ui/react'
 import { DeleteIcon, PlusSquareIcon } from '@chakra-ui/icons'
 import { FaRegListAlt } from 'react-icons/fa'
@@ -47,6 +48,7 @@ function TaskListPage() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isCreate, setIsCreate] = useState<boolean>(false)
   const [editingTask, setCreateOrEditingTask] = useState<Task | null>(null)
+  const toast = useToast()
 
   const handleOpenModalCreateOrSave = (taskCreateOrEdit: Task) => {
     setCurrentTask(taskCreateOrEdit)
@@ -84,11 +86,28 @@ function TaskListPage() {
   }) => {
     const { name, value } = e.target
 
-    if (name === 'status') {
+    if (name === 'statusInline') {
+      toastExemplo()
       task.status = value
       setCurrentTask(task)
       updateTask(task)
     }
+  }
+
+  // TODO: aplicar toasts nas chamadas
+  const toastExemplo = () => {
+    const examplePromise = new Promise((resolve, reject) => {
+      setTimeout(() => resolve(200), 3000)
+    })
+
+    toast.promise(examplePromise, {
+      success: {
+        title: 'Alteração concluída',
+        description: 'Situação da tarefa foi alterada'
+      },
+      error: { title: 'Erro', description: 'Algo deu errado' },
+      loading: { title: 'Aguarde...', description: 'Por favor aguarde' }
+    })
   }
 
   if (loading) {
@@ -134,34 +153,41 @@ function TaskListPage() {
               boxShadow="md"
               borderRadius="md"
             >
-              <VStack align="start">
+              <VStack align="start" spacing={4} mb={10}>
                 <Text fontWeight="bold">{task.name}</Text>
                 <Text>{task.description}</Text>
               </VStack>
               <HStack>
-                <Button
-                  aria-label="Alterar tarefa"
-                  onClick={() => handleOpenModalCreateOrSave(task)}
-                >
-                  Edit
-                </Button>
-                <IconButton
-                  aria-label="Remover tarefa"
-                  color={'red'}
-                  icon={<DeleteIcon />}
-                  onClick={() => handleDelete(task.id)}
-                />
-                <Select
-                  id="status"
-                  name="status"
-                  defaultValue={task?.status}
-                  onChange={handleInlineStatusChange}
-                >
-                  <option value="indefinido">Não Atribuído</option>
-                  <option value="pendente">Pendente</option>
-                  <option value="andamento">Em Andamento</option>
-                  <option value="concluido">Concluído</option>
-                </Select>
+                <VStack align="start" spacing={4} mb={10}>
+                  <Box display="flex" alignItems="right">
+                    <Button
+                      size="sm"
+                      marginRight={2}
+                      aria-label="Alterar tarefa"
+                      onClick={() => handleOpenModalCreateOrSave(task)}
+                    >
+                      Edit
+                    </Button>
+                    <IconButton
+                      size="sm"
+                      aria-label="Remover tarefa"
+                      color={'red'}
+                      icon={<DeleteIcon />}
+                      onClick={() => handleDelete(task.id)}
+                    />
+                  </Box>
+                  <Select
+                    id="statusInline"
+                    name="statusInline"
+                    defaultValue={task?.status}
+                    onChange={handleInlineStatusChange}
+                  >
+                    <option value="indefinido">Não Atribuído</option>
+                    <option value="pendente">Pendente</option>
+                    <option value="andamento">Em Andamento</option>
+                    <option value="concluido">Concluído</option>
+                  </Select>
+                </VStack>
               </HStack>
             </HStack>
           ))}

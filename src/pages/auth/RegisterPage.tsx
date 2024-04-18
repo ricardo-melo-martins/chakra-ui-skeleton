@@ -9,11 +9,14 @@ import {
   InputRightElement,
   Stack,
   useDisclosure,
+  useMediaQuery,
   useToast
 } from '@chakra-ui/react'
 import { redirect } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import HttpClient from '../../config/api/httpClient'
+import sleep from '../../common/types/utils/Sleep'
+import { history } from '../../boot/history'
 
 type RegisterFormData = {
   nome: string
@@ -31,7 +34,26 @@ type RegisterApiData = {
   password_confirmation: string
 }
 
+function exchangeData(formData: RegisterFormData): RegisterApiData {
+  const nome = formData.nome.trim().split(' ')
+  const first_name = nome[0]
+  const last_name = nome[nome?.length - 1]
+  const username = formData.email.trim().split('@')[0]
+
+  const registerApiData: RegisterApiData = {
+    email: formData.email,
+    username: username,
+    first_name: first_name,
+    last_name: last_name,
+    password: formData.senha,
+    password_confirmation: formData.senhaConfirma
+  }
+  return registerApiData
+}
+
 function RegisterPage() {
+  const [isFitScreen] = useMediaQuery('(max-width: 600px')
+
   const {
     register,
     formState: { errors, isSubmitting },
@@ -44,23 +66,34 @@ function RegisterPage() {
 
   const onRegister = async (data: RegisterFormData) => {
     try {
-      const response = await HttpClient.post('/auth/register', data)
-      console.log('RegisterPage: response:', response.data)
+      const dataApi = exchangeData(data)
+      const response = await HttpClient.post('/auth/register', dataApi)
 
+      if (response.status !== 201) {
+        console.log(response.data)
+      }
       toast({
         title: 'Cadastro realizado.',
-        description: 'Nós recebemos seus dados de cadastro.',
+        description:
+          'Nós recebemos seus dados de cadastro. Aguarde você será redirecionado',
         status: 'success',
         duration: 9000,
         isClosable: true
       })
 
-      // return redirect("/login");
-    } catch (error) {
-      console.error('RegisterPage: Error:', error)
+      sleep(9000).then(() => {
+        history.navigate('/admin/tarefas')
+      })
+    } catch (error: any) {
+      console.error('RegisterPage: Error:', JSON.parse(JSON.stringify(error)))
+      const message =
+        error && typeof error != 'undefined' && error.hasOwnProperty('message')
+          ? JSON.parse(JSON.stringify(error.message))
+          : 'Não foi possível enviar seus dados.'
+
       toast({
         title: 'Erro no cadastro.',
-        description: 'Não foi possível enviar seus dados.',
+        description: message,
         status: 'error',
         duration: 9000,
         isClosable: true
@@ -69,15 +102,23 @@ function RegisterPage() {
   }
 
   return (
-    <Flex align="center" justify="center" minHeight="100vh">
-      <Box w="300px" maxW="md" mx="auto" p={4}>
+    <Flex
+      height="100vh"
+      p={12}
+      width={isFitScreen ? '60%' : '100%'}
+      direction="column"
+      justifyContent={isFitScreen ? 'center' : 'space-between'}
+      alignItems="center"
+      textAlign="center"
+    >
+      <Box w="600px" maxW="md" mx="auto" p={4}>
         <form onSubmit={handleSubmit(onRegister)}>
           <Stack spacing={4}>
             <FormControl id="nome" isRequired>
               <FormLabel htmlFor="nome">Nome</FormLabel>
               <Input
                 type="text"
-                placeholder="Seu nome"
+                placeholder="Digite seu nome completo"
                 {...register('nome', { required: true })}
               />
               {errors.nome && (

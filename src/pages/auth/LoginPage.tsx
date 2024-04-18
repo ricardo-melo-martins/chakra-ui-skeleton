@@ -15,23 +15,25 @@ import {
 import { useForm } from 'react-hook-form'
 import HttpClient from '../../config/api/httpClient'
 import { history } from '../../boot/history'
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { AuthContext } from '../../config/context/AuthContext'
 import Props from '../../common/types/Props'
 
-type LoginType = {
+interface LoginType {
   email: string
   password: string
 }
 
 const LoginItem: LoginType = {
-  email: 'email@tests.com',
+  email: 'ricardo-melo-martins@users.noreply.github.com',
   password: 'YourP@ssw0rd!'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const LoginPage = (props: Props) => {
   const [isFitScreen] = useMediaQuery('(max-width: 600px')
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { authenticated, setAuthenticated } = useContext(AuthContext)
 
   const {
@@ -78,7 +80,7 @@ const LoginPage = (props: Props) => {
       alignItems="center"
       textAlign="center"
     >
-      <Box w="600px">
+      <Box w="600px" maxW="md" mx="auto" p={4}>
         <form onSubmit={handleSubmit(onLogin)}>
           <Stack spacing={4}>
             <FormControl isRequired>

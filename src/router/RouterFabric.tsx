@@ -60,7 +60,6 @@ const RouterFabric = (props: Props) => {
     <Routes>
       <Route element={<PrivateRoute />}>
         <Route path="admin/*" element={<AdminLayout />} />
-
         {privateRoutes.map((route) => (
           <Route key={route.path} path={route.path} element={route.element} />
         ))}

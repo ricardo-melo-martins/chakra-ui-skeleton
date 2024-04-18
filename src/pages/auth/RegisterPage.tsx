@@ -4,28 +4,33 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  Heading,
+  Icon,
   Input,
   InputGroup,
   InputRightElement,
   Stack,
+  Text,
+  VStack,
   useDisclosure,
   useMediaQuery,
   useToast
 } from '@chakra-ui/react'
-import { redirect } from 'react-router-dom'
+
 import { useForm } from 'react-hook-form'
 import HttpClient from '../../config/api/httpClient'
 import sleep from '../../common/types/utils/Sleep'
 import { history } from '../../boot/history'
+import { FaRegUser } from 'react-icons/fa'
 
-type RegisterFormData = {
+interface RegisterFormData {
   nome: string
   email: string
   senha: string
   senhaConfirma: string
 }
 
-type RegisterApiData = {
+interface RegisterApiData {
   username: string
   first_name: string
   last_name: string
@@ -82,7 +87,7 @@ function RegisterPage() {
       })
 
       sleep(9000).then(() => {
-        history.navigate('/admin/tarefas')
+        history.navigate('/public/login')
       })
     } catch (error: any) {
       console.error('RegisterPage: Error:', JSON.parse(JSON.stringify(error)))
@@ -112,6 +117,15 @@ function RegisterPage() {
       textAlign="center"
     >
       <Box w="600px" maxW="md" mx="auto" p={4}>
+        <VStack align="start" spacing={4} mb={10}>
+          <Heading size="lg" display="flex" alignItems="center">
+            <Icon as={FaRegUser} mr={2} /> {/* Ícone dinâmico */}
+            {'Registrar'}
+          </Heading>
+
+          <Text>Registre suas credenciais de acesso.</Text>
+        </VStack>
+
         <form onSubmit={handleSubmit(onRegister)}>
           <Stack spacing={4}>
             <FormControl id="nome" isRequired>

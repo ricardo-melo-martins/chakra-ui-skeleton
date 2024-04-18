@@ -10,7 +10,11 @@ import {
   InputRightElement,
   useDisclosure,
   useToast,
-  useMediaQuery
+  useMediaQuery,
+  VStack,
+  Heading,
+  Icon,
+  Text
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import HttpClient from '../../config/api/httpClient'
@@ -18,6 +22,7 @@ import { history } from '../../boot/history'
 import { useContext } from 'react'
 import { AuthContext } from '../../config/context/AuthContext'
 import Props from '../../common/types/Props'
+import { FaShieldAlt } from 'react-icons/fa'
 
 interface LoginType {
   email: string
@@ -25,8 +30,8 @@ interface LoginType {
 }
 
 const LoginItem: LoginType = {
-  email: 'ricardo-melo-martins@users.noreply.github.com',
-  password: 'YourP@ssw0rd!'
+  email: '',
+  password: ''
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -81,6 +86,15 @@ const LoginPage = (props: Props) => {
       textAlign="center"
     >
       <Box w="600px" maxW="md" mx="auto" p={4}>
+        <VStack align="start" spacing={4} mb={10}>
+          <Heading size="lg" display="flex" alignItems="center">
+            <Icon as={FaShieldAlt} mr={2} /> {/* Ícone dinâmico */}
+            {'Autenticar'}
+          </Heading>
+
+          <Text>Seja bem vindo.</Text>
+        </VStack>
+
         <form onSubmit={handleSubmit(onLogin)}>
           <Stack spacing={4}>
             <FormControl isRequired>

@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react'
-import HttpClient from '../../config/api/httpClient'
+import { useState } from 'react'
+
 import {
   VStack,
   HStack,
   Text,
   IconButton,
-  useToast,
   Button,
   Modal,
   ModalOverlay,
@@ -26,136 +25,82 @@ import {
   Heading,
   Icon,
   Flex,
-  Center,
-  Square,
   Spacer,
-  ButtonGroup,
-  Badge
+  ButtonGroup
 } from '@chakra-ui/react'
 import { DeleteIcon, PlusSquareIcon } from '@chakra-ui/icons'
-import { FaCog } from 'react-icons/fa'
-
-type TaskItem = {
-  id: number | null
-  name: string
-  description: string
-  delivery_date: string
-  status: number
-  finished_at: string
-}
-
-const taskItem: TaskItem = {
-  id: null,
-  name: '',
-  description: '',
-  status: 1,
-  delivery_date: '',
-  finished_at: ''
-}
+import { FaRegListAlt } from 'react-icons/fa'
+import { Task, taskItem, useTask } from './TaskContext'
 
 function TaskListPage() {
-  const toast = useToast()
+  const {
+    task,
+    tasks,
+    handleChange,
+    addTask,
+    updateTask,
+    removeTask,
+    loading,
+    setCurrentTask
+  } = useTask()
 
-  const [tasks, setTasks] = useState<TaskItem[]>([])
-  const [task, setTask] = useState<TaskItem>(taskItem)
-  const [editingTask, setCreateOrEditingTask] = useState<TaskItem | null>(null)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isCreate, setIsCreate] = useState<boolean>(false)
+  const [editingTask, setCreateOrEditingTask] = useState<Task | null>(null)
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await HttpClient.get('/tasks')
-        setTasks(response.data)
-      } catch (error) {
-        toast({
-          title: 'Erro em buscar.',
-          description: 'Não foi possível buscar a lista de tarefas.',
-          status: 'error',
-          duration: 9000,
-          isClosable: true
-        })
-      }
+  const handleOpenModalCreateOrSave = (taskCreateOrEdit: Task) => {
+    setCurrentTask(taskCreateOrEdit)
+    if (taskCreateOrEdit.id === null) {
+      setIsCreate(true)
+      setCreateOrEditingTask(editingTask)
+    } else {
+      setIsCreate(false)
+      setCreateOrEditingTask(taskCreateOrEdit)
     }
-
-    fetchTasks()
-  }, [])
-
-  const deleteTask = async (taskId: number | null) => {
-    try {
-      await HttpClient.delete(`/tasks/${taskId}`)
-      setTasks(tasks.filter((task: TaskItem) => task.id !== taskId))
-    } catch (error) {
-      console.error('deleteTask : error:', error)
-      toast({
-        title: 'Erro ao tentar apagar este registro.',
-        description: 'Não foi possível apagar registro da lista de tarefas.',
-        status: 'error',
-        duration: 9000,
-        isClosable: true
-      })
-    }
-  }
-
-  const openEditModal = (task: any) => {
-    setCreateOrEditingTask(task)
     setIsModalOpen(true)
-    setIsCreate(false)
   }
 
-  const openCreateModal = () => {
-    setCreateOrEditingTask(taskItem)
-    setIsModalOpen(true)
-    setIsCreate(true)
-  }
-
-  const closeEditModal = () => {
+  const handleCloseModal = () => {
     setCreateOrEditingTask(null)
     setIsModalOpen(false)
   }
 
-  const saveEditedTask = async (editedTask: TaskItem) => {
-    try {
-      await HttpClient.put(`/tasks/${editedTask.id}`, editedTask)
-
-      // setTasks(tasks.map((task) => (task.id === editedTask.id ? editedTask : task)));
-      closeEditModal()
-    } catch (error) {
-      console.error('saveEditedTask error:', error)
-      toast({
-        title: 'Erro ao tentar atualizar.',
-        description:
-          'Não foi possível atualizar este registro da lista de tarefas.',
-        status: 'error',
-        duration: 9000,
-        isClosable: true
-      })
-    }
+  const handleUpdate = (taskUpdate: Task | null) => {
+    if (taskUpdate) setCurrentTask(taskUpdate)
+    updateTask(task)
   }
 
-  const handleChange = (e: { target: { name: any; value: any } }) => {
-    const { name, value } = e.target
-    setTask((prevState) => ({
-      ...prevState,
-      [name]: value
-    }))
+  const handleCreate = (taskCreate: Task | null) => {
+    if (taskCreate) setCurrentTask(taskCreate)
+    addTask(task)
+  }
+
+  const handleDelete = (taskId: number | null) => {
+    if (taskId) removeTask(taskId)
+  }
+
+  if (loading) {
+    // TODO: Incluir no BehaviorSubject rjxs Interceptado pelo axios
+    return <p>Carregando...</p>
   }
 
   return (
     <Flex align="center" justify="center">
       <Box w="600px">
         <Flex minWidth="max-content" alignItems="center" gap="2">
-          <Box p="2">
-            <Icon as={FaCog} mr={0} />
-            <VStack align="start">
-              <Heading size="lg">Tarefas</Heading>
-              <Text>Lista de tarefas</Text>
+          <Box mt="5">
+            <VStack align="start" spacing={4} mb={10}>
+              <Heading size="lg" display="flex" alignItems="center">
+                <Icon as={FaRegListAlt} mr={2} /> {/* Ícone dinâmico */}
+                {'Tarefas'}
+              </Heading>
+              <Text>Lista de tarefas registradas por você.</Text>
             </VStack>
           </Box>
           <Spacer />
           <ButtonGroup gap="2">
             <Button
-              onClick={() => openCreateModal()}
+              onClick={() => handleOpenModalCreateOrSave(taskItem)}
               leftIcon={<PlusSquareIcon />}
               colorScheme="pink"
               variant="solid"
@@ -168,7 +113,7 @@ function TaskListPage() {
         <Divider />
 
         <VStack spacing={4}>
-          {tasks.map((task: TaskItem) => (
+          {tasks.map((task: Task) => (
             <HStack
               key={task.id}
               w="full"
@@ -184,7 +129,7 @@ function TaskListPage() {
               <HStack>
                 <Button
                   aria-label="Alterar tarefa"
-                  onClick={() => openEditModal(task)}
+                  onClick={() => handleOpenModalCreateOrSave(task)}
                 >
                   Edit
                 </Button>
@@ -192,87 +137,93 @@ function TaskListPage() {
                   aria-label="Remover tarefa"
                   color={'red'}
                   icon={<DeleteIcon />}
-                  onClick={() => deleteTask(task.id)}
+                  onClick={() => handleDelete(task.id)}
                 />
               </HStack>
             </HStack>
           ))}
         </VStack>
 
-        <Modal isOpen={isModalOpen} onClose={closeEditModal}>
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>
               <Text fontWeight="bold">
                 {isCreate
                   ? 'Criar'
-                  : 'Alterar tarefa "' + editingTask?.name + '"'}{' '}
+                  : 'Alterar tarefa "' + editingTask?.name + '"'}
               </Text>{' '}
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Divider mb={5} />
 
-              <FormControl isRequired mb={5}>
-                <FormLabel htmlFor="name">Nome da Tarefa</FormLabel>
-                <Input
-                  id="name"
-                  name="name"
-                  placeholder="Digite o nome da tarefa"
-                  defaultValue={editingTask?.name}
-                  onChange={handleChange}
-                />
-              </FormControl>
-
-              <FormControl isRequired mb={5}>
-                <FormLabel htmlFor="description">Descrição</FormLabel>
-                <Textarea
-                  id="description"
-                  name="description"
-                  placeholder="Descreva a tarefa"
-                  defaultValue={editingTask?.description}
-                  onChange={handleChange}
-                />
-              </FormControl>
-
-              <FormControl id="dataHora" mb={5}>
-                <FormLabel>Data e Hora</FormLabel>
-                <InputGroup>
+              <form>
+                <FormControl isRequired mb={5}>
+                  <FormLabel htmlFor="name">Nome da Tarefa</FormLabel>
                   <Input
-                    type="datetime-local"
-                    placeholder="Selecione a data e hora"
-                    name="dataHora"
-                    defaultValue={editingTask?.delivery_date}
+                    id="name"
+                    name="name"
+                    placeholder="Digite o nome da tarefa"
+                    defaultValue={editingTask?.name}
+                    onChange={handleChange}
                   />
-                  <InputRightElement></InputRightElement>
-                </InputGroup>
-              </FormControl>
+                </FormControl>
 
-              <FormControl isRequired mb={5}>
-                <FormLabel htmlFor="status">Status</FormLabel>
-                <Select
-                  id="status"
-                  name="status"
-                  defaultValue={editingTask?.status}
-                  onChange={handleChange}
-                >
-                  <option value="-1">Não Atribuído</option>
-                  <option value="1">Pendente</option>
-                  <option value="2">Em Andamento</option>
-                  <option value="3">Concluído</option>
-                </Select>
-              </FormControl>
+                <FormControl isRequired mb={5}>
+                  <FormLabel htmlFor="description">Descrição</FormLabel>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    placeholder="Descreva a tarefa"
+                    defaultValue={editingTask?.description}
+                    onChange={handleChange}
+                  />
+                </FormControl>
+
+                <FormControl id="delivery_date" mb={5}>
+                  <FormLabel>Data e Hora</FormLabel>
+                  <InputGroup>
+                    <Input
+                      type="datetime-local"
+                      placeholder="Selecione a data e hora"
+                      name="delivery_date"
+                      defaultValue={editingTask?.delivery_date}
+                    />
+                    <InputRightElement></InputRightElement>
+                  </InputGroup>
+                </FormControl>
+
+                <FormControl isRequired mb={5}>
+                  <FormLabel htmlFor="status">Status</FormLabel>
+                  <Select
+                    id="status"
+                    name="status"
+                    defaultValue={editingTask?.status}
+                    onChange={handleChange}
+                  >
+                    <option value="indefinido">Não Atribuído</option>
+                    <option value="pendente">Pendente</option>
+                    <option value="andamento">Em Andamento</option>
+                    <option value="concluido">Concluído</option>
+                  </Select>
+                </FormControl>
+              </form>
               <Divider />
             </ModalBody>
             <ModalFooter>
               <HStack justify="space-between">
                 <Button
                   colorScheme="pink"
-                  onClick={() => saveEditedTask(editingTask!)}
+                  onClick={
+                    isCreate
+                      ? () => handleCreate(editingTask)
+                      : () => handleUpdate(editingTask)
+                  }
                 >
                   Salvar
                 </Button>
-                <Button variant="ghost" onClick={closeEditModal}>
+                <Button variant="ghost" onClick={handleCloseModal}>
                   Cancelar
                 </Button>
               </HStack>

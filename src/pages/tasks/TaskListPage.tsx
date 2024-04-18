@@ -79,6 +79,18 @@ function TaskListPage() {
     if (taskId) removeTask(taskId)
   }
 
+  const handleInlineStatusChange = (e: {
+    target: { name: any; value: any }
+  }) => {
+    const { name, value } = e.target
+
+    if (name === 'status') {
+      task.status = value
+      setCurrentTask(task)
+      updateTask(task)
+    }
+  }
+
   if (loading) {
     // TODO: Incluir no BehaviorSubject rjxs Interceptado pelo axios
     return <p>Carregando...</p>
@@ -139,6 +151,17 @@ function TaskListPage() {
                   icon={<DeleteIcon />}
                   onClick={() => handleDelete(task.id)}
                 />
+                <Select
+                  id="status"
+                  name="status"
+                  defaultValue={task?.status}
+                  onChange={handleInlineStatusChange}
+                >
+                  <option value="indefinido">Não Atribuído</option>
+                  <option value="pendente">Pendente</option>
+                  <option value="andamento">Em Andamento</option>
+                  <option value="concluido">Concluído</option>
+                </Select>
               </HStack>
             </HStack>
           ))}

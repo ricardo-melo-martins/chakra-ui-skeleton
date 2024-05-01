@@ -17,8 +17,8 @@ import {
   Text
 } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
-import HttpClient from '../../config/api/httpClient'
-import { history } from '../../boot/history'
+import HttpClient from '../../boot/api/httpClient'
+import { history } from '../../boot/navigator/history'
 import { useContext } from 'react'
 import { AuthContext } from '../../config/context/AuthContext'
 import Props from '../../common/types/Props'

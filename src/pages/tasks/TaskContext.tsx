@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import HttpClient from '../../config/api/httpClient'
+import { HttpClient } from '../../boot'
 import Props from '../../common/types/Props'
 
 export interface Task {

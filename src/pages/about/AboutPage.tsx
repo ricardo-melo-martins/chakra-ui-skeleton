@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react'
 
 import { FaRegThumbsUp } from 'react-icons/fa'
+import { Logo } from '../../components/logos/Logo'
 
 function AboutPage() {
   const [isFitScreen] = useMediaQuery('(max-width: 600px')
@@ -35,6 +36,9 @@ function AboutPage() {
           Esta é um esqueleto de aplicação de tarefas usando Chakra UI com
           Typescript.
         </Text>
+      </Box>
+      <Box w="600px" maxW="md" mx="auto" p={4}>
+        <Logo h="40vmin" pointerEvents="none" />
       </Box>
     </Flex>
   )

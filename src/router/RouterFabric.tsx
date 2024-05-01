@@ -1,10 +1,12 @@
 import { lazy, useContext } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import AboutPage from '../pages/about/AboutPage'
-import RegisterPage from '../pages/auth/RegisterPage'
-import TaskListPage from '../pages/tasks/TaskListPage'
-import TaskEditPage from '../pages/tasks/TaskEditPage'
-import LoginPage from '../pages/auth/LoginPage'
+import {
+  LoginPage,
+  RegisterPage,
+  TaskListPage,
+  TaskEditPage,
+  AboutPage
+} from '../pages'
 import { AdminLayout } from '../layouts/AdminLayout'
 import PrivateRoute from '../components/route/PrivateRoute'
 import { AuthContext } from '../config/context/AuthContext'

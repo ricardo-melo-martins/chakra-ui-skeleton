@@ -14,8 +14,7 @@ import {
 import { ColorModeSwitcher } from '../ColorModeSwitcher'
 import { AuthContext } from '../../config/context/AuthContext'
 import { useContext } from 'react'
-import HttpClient from '../../config/api/httpClient'
-import { history } from '../../boot/history'
+import { HttpClient, history } from '../../boot'
 import { ChevronDownIcon } from '@chakra-ui/icons'
 import Props from '../../common/types/Props'
 

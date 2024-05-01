@@ -1,0 +1,6 @@
+export { default as AboutPage } from './about/AboutPage'
+export { default as LoginPage } from './auth/LoginPage'
+export { default as RegisterPage } from './auth/RegisterPage'
+export { default as NotFoundPage } from './errors/NotFoundPage'
+export { default as TaskListPage } from './tasks/TaskListPage'
+export { default as TaskEditPage } from './tasks/TaskEditPage'

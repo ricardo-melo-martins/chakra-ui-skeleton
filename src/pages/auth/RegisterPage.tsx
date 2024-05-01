@@ -18,9 +18,8 @@ import {
 } from '@chakra-ui/react'
 
 import { useForm } from 'react-hook-form'
-import HttpClient from '../../config/api/httpClient'
+import { HttpClient, history } from '../../boot'
 import sleep from '../../common/types/utils/Sleep'
-import { history } from '../../boot/history'
 import { FaRegUser } from 'react-icons/fa'
 
 interface RegisterFormData {
